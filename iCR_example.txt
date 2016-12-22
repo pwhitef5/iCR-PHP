@@ -1,0 +1,34 @@
+<?php
+include("iCR.php");
+
+$hostname = "172.24.9.129";
+$username = "admin";
+$password = "admin";
+
+$BIGIP_URL_BASE = "https://$hostname/mgmt/tm";
+$url = $BIGIP_URL_BASE."/ltm/virtual";
+$handle = curl_init();
+echo "<html><body><h2><pre>";
+
+echo "</pre><h2>Non-existent Virtual Server</h2><pre>";
+print_r(iCR($handle,$username,$password,"GET",$url."/iCR_Test_VS"));
+
+// Create a Virtual Server
+echo "</pre><h2>Created Virtual Server</h2><pre>";
+
+$vs = array('name'=>"iCR_Test_VS",'destination'=>'192.168.1.1:80','mask'=>'255.255.255.255','ipProtocol'=>'tcp');
+print_r(iCR($handle,$username,$password,'POST',$url,$vs));
+
+// Edit the Virtual Server
+echo "</pre><h2>Edited Virtual Server</h2><pre>";
+$description = array('description' => 'This is a modified Virtual Server');
+print_r(iCR($handle,$username,$password,'PUT',$url."/iCR_Test_VS",$description));
+
+// Delete the Virtual Server
+echo "</pre><h2>Deleted Virtual Server</h2><pre>";
+print_r(iCR($handle,$username,$password,"DELETE",$url."/iCR_Test_VS"));
+
+echo "</pre><h2>Post-delete Virtual Server</h2><pre>";
+print_r(iCR($handle,$username,$password,"GET",$url."/iCR_Test_VS"));
+
+echo "</pre></body></html>";
